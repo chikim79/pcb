@@ -1,0 +1,9 @@
+Circuit Board Design Discussion
+
+The PCB manufacturing simulation design leverages two primary object-oriented design patterns.
+The Factory Pattern is used to encapsulate the creation logic for different board types (TestBoard, SensorBoard, and GatewayBoard)
+The Observer Pattern is implemented through the StatisticsCollector, which receives notifications directly from each station about defect detections and station failures.
+
+The abstract Station class defines the common interface for all eight manufacturing stations, while concrete implementations handle their specific operations and defect detection logic.
+Each station receives its StatisticsCollector dependency through constructor injection, ensuring proper Observer pattern implementation.
+Each PCB type can have unique failure probabilities at defect-detecting stations (Place Components, Optical Inspection, Hand Soldering, and Test).

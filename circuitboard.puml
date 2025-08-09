@@ -1,0 +1,172 @@
+@startuml PCB_Assembly_Simulation
+
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor<<Pattern>> LightYellow
+    BorderColor<<Pattern>> DarkGoldenRod
+    BackgroundColor<<Abstract>> LightBlue
+    BorderColor<<Abstract>> DarkBlue
+}
+
+' PCB Hierarchy
+abstract class PCB {
+    - id: String
+    - type: String
+    - failed: boolean
+    - failureReason: String
+    + PCB(type: String)
+    + getType(): String
+    + setFailed(reason: String): void
+    + isFailed(): boolean
+    + {abstract} getDefectRate(stationType: String): double
+}
+
+class TestBoard {
+    - defectRates: Map<String, Double>
+    + TestBoard()
+    + getDefectRate(stationType: String): double
+}
+
+class SensorBoard {
+    - defectRates: Map<String, Double>
+    + SensorBoard()
+    + getDefectRate(stationType: String): double
+}
+
+class GatewayBoard {
+    - defectRates: Map<String, Double>
+    + GatewayBoard()
+    + getDefectRate(stationType: String): double
+}
+
+' Station Hierarchy
+abstract class Station {
+    - name: String
+    - stationFailureRate: double
+    - stats: StatisticsCollector
+    + Station(failureRate: double, stats: StatisticsCollector)
+    + process(pcb: PCB): void
+    + checkStationFailure(): boolean
+    # {abstract} performOperation(pcb: PCB): boolean
+}
+
+class ApplySolderPasteStation {
+    + ApplySolderPasteStation(failureRate: double, stats: StatisticsCollector)
+    # performOperation(pcb: PCB): boolean
+}
+
+class PlaceComponentsStation {
+    + PlaceComponentsStation(failureRate: double, stats: StatisticsCollector)
+    # performOperation(pcb: PCB): boolean
+}
+
+class ReflowSolderStation {
+    + ReflowSolderStation(failureRate: double, stats: StatisticsCollector)
+    # performOperation(pcb: PCB): boolean
+}
+
+class OpticalInspectStation {
+    + OpticalInspectStation(failureRate: double, stats: StatisticsCollector)
+    # performOperation(pcb: PCB): boolean
+}
+
+class HandSolderingStation {
+    + HandSolderingStation(failureRate: double, stats: StatisticsCollector)
+    # performOperation(pcb: PCB): boolean
+}
+
+class CleaningStation {
+    + CleaningStation(failureRate: double, stats: StatisticsCollector)
+    # performOperation(pcb: PCB): boolean
+}
+
+class DepanelizationStation {
+    + DepanelizationStation(failureRate: double, stats: StatisticsCollector)
+    # performOperation(pcb: PCB): boolean
+}
+
+class TestStation {
+    + TestStation(failureRate: double, stats: StatisticsCollector)
+    # performOperation(pcb: PCB): boolean
+}
+
+' Factory Pattern
+class PCBFactory <<Pattern>> {
+    + createPCB(type: String): PCB
+}
+note right of PCBFactory : Factory Pattern\nEncapsulates PCB\ncreation logic
+
+' Assembly Line Controller
+class AssemblyLine {
+    - stations: List<Station>
+    - stats: StatisticsCollector
+    + AssemblyLine()
+    + processPCB(pcb: PCB): void
+    + runSimulation(pcbType: String, quantity: int): StatisticsCollector
+}
+
+' Observer Pattern
+class StatisticsCollector <<Pattern>> {
+    - pcbsSubmitted: int
+    - defectFailures: Map<String, Integer>
+    - stationFailures: Map<String, Integer>
+    - completedPCBs: int
+    + recordSubmission(): void
+    + recordDefectFailure(station: String): void
+    + recordStationFailure(station: String): void
+    + recordCompletion(): void
+    + generateReport(pcbType: String): String
+}
+note right of StatisticsCollector : Observer Pattern\nTracks events per\nPCB type simulation
+
+' Main Controller
+class SimulationController {
+    - assemblyLine: AssemblyLine
+    - factory: PCBFactory
+    + SimulationController()
+    + runSimulation(pcbType: String, quantity: int): void
+    + printResults(): void
+}
+
+' Inheritance relationships
+PCB <|-- TestBoard
+PCB <|-- SensorBoard
+PCB <|-- GatewayBoard
+
+Station <|-- ApplySolderPasteStation
+Station <|-- PlaceComponentsStation
+Station <|-- ReflowSolderStation
+Station <|-- OpticalInspectStation
+Station <|-- HandSolderingStation
+Station <|-- CleaningStation
+Station <|-- DepanelizationStation
+Station <|-- TestStation
+
+' Associations
+Station ..> PCB : processes
+
+PCBFactory ..> PCB : <<creates>>
+
+AssemblyLine o-- Station : contains
+AssemblyLine ..> PCB : processes
+
+
+PlaceComponentsStation --> StatisticsCollector : notifies
+ReflowSolderStation --> StatisticsCollector : notifies
+OpticalInspectionStation --> StatisticsCollector : notifies
+HandSolderingStation --> StatisticsCollector : notifies
+CleaningStation --> StatisticsCollector : notifies
+DepanelizationStation --> StatisticsCollector : notifies
+TestStation --> StatisticsCollector : notifies
+
+
+SimulationController --> AssemblyLine : controls
+SimulationController --> PCBFactory : uses
+
+' Notes for design patterns
+note bottom of PlaceComponentsStation : Detects\nDefects
+note bottom of OpticalInspectionStation : Detects\nDefects
+note bottom of HandSolderingStation : Detects\nDefects
+note bottom of TestStation : Detects\nDefects
+
+@enduml
