@@ -1,7 +1,5 @@
 package com.cu5448.pcb.model;
 
-import java.util.Map;
-
 import com.cu5448.pcb.config.PCBProperties;
 
 import lombok.EqualsAndHashCode;
@@ -10,39 +8,33 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GatewayBoard extends PCB {
 
-    private final Map<String, Double> defectRates;
+    private final DefectRates defectRates;
 
     public GatewayBoard() {
         super("GatewayBoard");
         // Default rates for backward compatibility
-        this.defectRates =
-                Map.of(
-                        "PlaceComponents",
-                        0.004,
-                        "OpticalInspection",
-                        0.004,
-                        "HandSoldering",
-                        0.008,
-                        "Test",
-                        0.008);
+        this.defectRates = DefectRates.gatewayBoardDefaults();
     }
 
     public GatewayBoard(PCBProperties.GatewayBoardDefectRates defectRatesConfig) {
         super("GatewayBoard");
         this.defectRates =
-                Map.of(
-                        "PlaceComponents",
-                        defectRatesConfig.getPlaceComponentsDefectRate(),
-                        "OpticalInspection",
-                        defectRatesConfig.getOpticalInspectionDefectRate(),
-                        "HandSoldering",
-                        defectRatesConfig.getHandSolderingDefectRate(),
-                        "Test",
-                        defectRatesConfig.getTestDefectRate());
+                DefectRates.builder()
+                        .placeComponentsDefectRate(defectRatesConfig.getPlaceComponentsDefectRate())
+                        .opticalInspectionDefectRate(
+                                defectRatesConfig.getOpticalInspectionDefectRate())
+                        .handSolderingDefectRate(defectRatesConfig.getHandSolderingDefectRate())
+                        .testDefectRate(defectRatesConfig.getTestDefectRate())
+                        .build();
     }
 
     @Override
     public double getDefectRate(String stationType) {
-        return defectRates.getOrDefault(stationType, 0.0);
+        return defectRates.getDefectRate(stationType);
+    }
+
+    @Override
+    public DefectRates getDefectRates() {
+        return defectRates;
     }
 }

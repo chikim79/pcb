@@ -17,15 +17,13 @@ public abstract class PCB {
 
     private final String type;
 
-    private boolean failed;
+    private boolean failed = false;
 
-    private String failureReason;
+    private String failureReason = null;
 
     public PCB(String type) {
         this.id = UUID.randomUUID().toString();
         this.type = type;
-        this.failed = false;
-        this.failureReason = null;
     }
 
     public void setFailed(String reason) {
@@ -34,4 +32,6 @@ public abstract class PCB {
     }
 
     public abstract double getDefectRate(String stationType);
+
+    public abstract DefectRates getDefectRates();
 }

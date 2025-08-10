@@ -20,13 +20,12 @@ public abstract class Station {
 
     protected final StatisticsCollector stats;
 
-    protected final Random random;
+    protected final Random random = new Random();
 
     public Station(String name, double failureRate, StatisticsCollector stats) {
         this.name = name;
         this.stationFailureRate = failureRate;
         this.stats = stats;
-        this.random = new Random();
     }
 
     public void process(PCB pcb) {
@@ -52,7 +51,4 @@ public abstract class Station {
     }
 
     protected abstract boolean performOperation(PCB pcb);
-
-    // Lombok @Getter annotation generates getName() and getStationFailureRate() methods
-
 }
