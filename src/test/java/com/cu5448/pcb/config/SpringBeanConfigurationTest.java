@@ -24,8 +24,6 @@ class SpringBeanConfigurationTest {
 
     private final List<Station> stations;
 
-    private final StationFactory stationFactory;
-
     @Test
     void testAssemblyLineInjection() {
         assertNotNull(assemblyLine, "AssemblyLine should be injected");
