@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.cu5448.pcb.config.SimulationProperties;
 import com.cu5448.pcb.service.AssemblyLine;
 import com.cu5448.pcb.service.StatisticsCollector;
 
@@ -22,8 +21,6 @@ public class SimulationController {
 
     private final AssemblyLine assemblyLine;
 
-    private final SimulationProperties simulationProperties;
-
     private final Map<String, StatisticsCollector> results = new HashMap<>();
 
     public void runSimulation(String pcbType, int quantity) {
@@ -33,7 +30,7 @@ public class SimulationController {
     }
 
     public void runSimulation(String pcbType) {
-        runSimulation(pcbType, simulationProperties.getPcbQuantity());
+        runSimulation(pcbType, 1000);
     }
 
     public void runAllSimulations() {

@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import com.cu5448.pcb.config.SimulationProperties;
 import com.cu5448.pcb.factory.PCBFactory;
 import com.cu5448.pcb.model.PCB;
 import com.cu5448.pcb.station.Station;
@@ -23,8 +22,6 @@ public class AssemblyLine {
     private final List<Station> stations;
 
     private final PCBFactory factory;
-
-    private final SimulationProperties simulationProperties;
 
     private final ApplicationContext applicationContext;
 
@@ -53,10 +50,6 @@ public class AssemblyLine {
         }
 
         return stats;
-    }
-
-    public StatisticsCollector runSimulation(String pcbType) {
-        return runSimulation(pcbType, simulationProperties.getPcbQuantity());
     }
 
     public List<Station> getStations() {

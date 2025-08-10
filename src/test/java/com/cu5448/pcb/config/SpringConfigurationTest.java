@@ -19,8 +19,6 @@ class SpringConfigurationTest {
 
     @Autowired private PCBFactory pcbFactory;
 
-    @Autowired private SimulationProperties simulationProperties;
-
     @Autowired private StationProperties stationProperties;
 
     @Autowired private PCBProperties pcbProperties;
@@ -36,7 +34,6 @@ class SpringConfigurationTest {
     @Test
     void testConfigurationProperties() {
         // Verify that configuration properties are loaded correctly
-        assertEquals(1000, simulationProperties.getPcbQuantity());
         assertEquals(0.002, stationProperties.getFailureRate(), 0.0001);
 
         // Test PCB defect rates from properties (using Lombok-generated getters)
