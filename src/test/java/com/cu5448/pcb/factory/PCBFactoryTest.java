@@ -12,12 +12,9 @@ class PCBFactoryTest {
 
     private PCBFactory factory;
 
-    private PCBProperties pcbProperties;
-
     @BeforeEach
     void setUp() {
-        pcbProperties = new PCBProperties();
-        factory = new PCBFactory(pcbProperties);
+        factory = new PCBFactory(new PCBProperties());
     }
 
     @Test

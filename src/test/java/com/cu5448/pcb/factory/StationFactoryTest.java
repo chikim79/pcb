@@ -3,16 +3,20 @@ package com.cu5448.pcb.factory;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestConstructor;
 
 import com.cu5448.pcb.station.*;
 
+import lombok.RequiredArgsConstructor;
+
 /** Test class for StationFactory implementation */
 @SpringBootTest
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@RequiredArgsConstructor
 class StationFactoryTest {
 
-    @Autowired private StationFactory stationFactory;
+    private final StationFactory stationFactory;
 
     @Test
     void testFactoryInjection() {

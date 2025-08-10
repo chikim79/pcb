@@ -5,22 +5,26 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestConstructor;
 
 import com.cu5448.pcb.factory.StationFactory;
 import com.cu5448.pcb.service.AssemblyLine;
 import com.cu5448.pcb.station.*;
 
+import lombok.RequiredArgsConstructor;
+
 /** Test class to verify Spring bean configuration using Abstract Factory Pattern */
 @SpringBootTest
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@RequiredArgsConstructor
 class SpringBeanConfigurationTest {
 
-    @Autowired private AssemblyLine assemblyLine;
+    private final AssemblyLine assemblyLine;
 
-    @Autowired private List<Station> stations;
+    private final List<Station> stations;
 
-    @Autowired private StationFactory stationFactory;
+    private final StationFactory stationFactory;
 
     @Test
     void testAssemblyLineInjection() {

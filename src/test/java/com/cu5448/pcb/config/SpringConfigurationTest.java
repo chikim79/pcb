@@ -3,25 +3,29 @@ package com.cu5448.pcb.config;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestConstructor;
 
 import com.cu5448.pcb.controller.SimulationController;
 import com.cu5448.pcb.factory.PCBFactory;
 import com.cu5448.pcb.service.AssemblyLine;
 
+import lombok.RequiredArgsConstructor;
+
 @SpringBootTest
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@RequiredArgsConstructor
 class SpringConfigurationTest {
 
-    @Autowired private SimulationController simulationController;
+    private final SimulationController simulationController;
 
-    @Autowired private AssemblyLine assemblyLine;
+    private final AssemblyLine assemblyLine;
 
-    @Autowired private PCBFactory pcbFactory;
+    private final PCBFactory pcbFactory;
 
-    @Autowired private StationProperties stationProperties;
+    private final StationProperties stationProperties;
 
-    @Autowired private PCBProperties pcbProperties;
+    private final PCBProperties pcbProperties;
 
     @Test
     void testSpringDependencyInjection() {
