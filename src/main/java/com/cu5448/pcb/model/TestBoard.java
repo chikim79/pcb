@@ -1,7 +1,5 @@
 package com.cu5448.pcb.model;
 
-import com.cu5448.pcb.config.PCBProperties;
-
 import lombok.EqualsAndHashCode;
 
 /** Test Board PCB Implementation using Lombok */
@@ -10,22 +8,9 @@ public class TestBoard extends PCB {
 
     private final DefectRates defectRates;
 
-    public TestBoard() {
+    public TestBoard(DefectRates defectRates) {
         super("TestBoard");
-        // Default rates for backward compatibility
-        this.defectRates = DefectRates.testBoardDefaults();
-    }
-
-    public TestBoard(PCBProperties.TestBoardDefectRates defectRatesConfig) {
-        super("TestBoard");
-        this.defectRates =
-                DefectRates.builder()
-                        .placeComponentsDefectRate(defectRatesConfig.getPlaceComponentsDefectRate())
-                        .opticalInspectionDefectRate(
-                                defectRatesConfig.getOpticalInspectionDefectRate())
-                        .handSolderingDefectRate(defectRatesConfig.getHandSolderingDefectRate())
-                        .testDefectRate(defectRatesConfig.getTestDefectRate())
-                        .build();
+        this.defectRates = defectRates;
     }
 
     @Override

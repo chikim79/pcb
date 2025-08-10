@@ -46,34 +46,4 @@ public class DefectRates {
                 .testDefectRate(0.0)
                 .build();
     }
-
-    /** Creates DefectRates for TestBoard with default values. */
-    public static DefectRates testBoardDefaults() {
-        return DefectRates.builder()
-                .placeComponentsDefectRate(0.05)
-                .opticalInspectionDefectRate(0.10)
-                .handSolderingDefectRate(0.05)
-                .testDefectRate(0.10)
-                .build();
-    }
-
-    /** Creates DefectRates for SensorBoard with default values. */
-    public static DefectRates sensorBoardDefaults() {
-        return DefectRates.builder()
-                .placeComponentsDefectRate(0.002)
-                .opticalInspectionDefectRate(0.002)
-                .handSolderingDefectRate(0.004)
-                .testDefectRate(0.004)
-                .build();
-    }
-
-    /** Creates DefectRates for GatewayBoard with default values. */
-    public static DefectRates gatewayBoardDefaults() {
-        return DefectRates.builder()
-                .placeComponentsDefectRate(0.004)
-                .opticalInspectionDefectRate(0.004)
-                .handSolderingDefectRate(0.008)
-                .testDefectRate(0.008)
-                .build();
-    }
 }

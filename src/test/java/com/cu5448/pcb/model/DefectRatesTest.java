@@ -25,7 +25,13 @@ class DefectRatesTest {
 
     @Test
     void testGetDefectRateWithValidStations() {
-        DefectRates rates = DefectRates.testBoardDefaults();
+        DefectRates rates =
+                DefectRates.builder()
+                        .placeComponentsDefectRate(0.05)
+                        .opticalInspectionDefectRate(0.10)
+                        .handSolderingDefectRate(0.05)
+                        .testDefectRate(0.10)
+                        .build();
 
         assertEquals(0.05, rates.getDefectRate("PlaceComponents"));
         assertEquals(0.10, rates.getDefectRate("OpticalInspection"));
@@ -35,7 +41,13 @@ class DefectRatesTest {
 
     @Test
     void testGetDefectRateWithInvalidStation() {
-        DefectRates rates = DefectRates.testBoardDefaults();
+        DefectRates rates =
+                DefectRates.builder()
+                        .placeComponentsDefectRate(0.05)
+                        .opticalInspectionDefectRate(0.10)
+                        .handSolderingDefectRate(0.05)
+                        .testDefectRate(0.10)
+                        .build();
 
         assertEquals(0.0, rates.getDefectRate("ApplySolderPaste"));
         assertEquals(0.0, rates.getDefectRate("ReflowSolder"));
@@ -55,50 +67,34 @@ class DefectRatesTest {
     }
 
     @Test
-    void testTestBoardDefaults() {
-        DefectRates rates = DefectRates.testBoardDefaults();
-
-        assertEquals(0.05, rates.getDefectRate("PlaceComponents"));
-        assertEquals(0.10, rates.getDefectRate("OpticalInspection"));
-        assertEquals(0.05, rates.getDefectRate("HandSoldering"));
-        assertEquals(0.10, rates.getDefectRate("Test"));
-    }
-
-    @Test
-    void testSensorBoardDefaults() {
-        DefectRates rates = DefectRates.sensorBoardDefaults();
-
-        assertEquals(0.002, rates.getDefectRate("PlaceComponents"));
-        assertEquals(0.002, rates.getDefectRate("OpticalInspection"));
-        assertEquals(0.004, rates.getDefectRate("HandSoldering"));
-        assertEquals(0.004, rates.getDefectRate("Test"));
-    }
-
-    @Test
-    void testGatewayBoardDefaults() {
-        DefectRates rates = DefectRates.gatewayBoardDefaults();
-
-        assertEquals(0.004, rates.getDefectRate("PlaceComponents"));
-        assertEquals(0.004, rates.getDefectRate("OpticalInspection"));
-        assertEquals(0.008, rates.getDefectRate("HandSoldering"));
-        assertEquals(0.008, rates.getDefectRate("Test"));
-    }
-
-    @Test
     void testPCBIntegration() {
         // Test that PCB implementations can use DefectRates
-        TestBoard testBoard = new TestBoard();
+        DefectRates testRates =
+                DefectRates.builder()
+                        .placeComponentsDefectRate(0.05)
+                        .opticalInspectionDefectRate(0.10)
+                        .handSolderingDefectRate(0.05)
+                        .testDefectRate(0.10)
+                        .build();
+        TestBoard testBoard = new TestBoard(testRates);
         DefectRates defectRates = testBoard.getDefectRates();
 
         assertNotNull(defectRates);
         assertEquals(0.05, testBoard.getDefectRate("PlaceComponents"));
         assertEquals(0.05, defectRates.getDefectRate("PlaceComponents"));
 
-        SensorBoard sensorBoard = new SensorBoard();
-        DefectRates sensorRates = sensorBoard.getDefectRates();
+        DefectRates sensorRates =
+                DefectRates.builder()
+                        .placeComponentsDefectRate(0.002)
+                        .opticalInspectionDefectRate(0.002)
+                        .handSolderingDefectRate(0.004)
+                        .testDefectRate(0.004)
+                        .build();
+        SensorBoard sensorBoard = new SensorBoard(sensorRates);
+        DefectRates actualSensorRates = sensorBoard.getDefectRates();
 
-        assertNotNull(sensorRates);
+        assertNotNull(actualSensorRates);
         assertEquals(0.002, sensorBoard.getDefectRate("PlaceComponents"));
-        assertEquals(0.002, sensorRates.getDefectRate("PlaceComponents"));
+        assertEquals(0.002, actualSensorRates.getDefectRate("PlaceComponents"));
     }
 }

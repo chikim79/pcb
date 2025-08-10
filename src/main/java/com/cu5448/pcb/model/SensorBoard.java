@@ -1,7 +1,5 @@
 package com.cu5448.pcb.model;
 
-import com.cu5448.pcb.config.PCBProperties;
-
 import lombok.EqualsAndHashCode;
 
 /** Sensor Board PCB Implementation using Lombok */
@@ -10,22 +8,9 @@ public class SensorBoard extends PCB {
 
     private final DefectRates defectRates;
 
-    public SensorBoard() {
+    public SensorBoard(DefectRates defectRates) {
         super("SensorBoard");
-        // Default rates for backward compatibility
-        this.defectRates = DefectRates.sensorBoardDefaults();
-    }
-
-    public SensorBoard(PCBProperties.SensorBoardDefectRates defectRatesConfig) {
-        super("SensorBoard");
-        this.defectRates =
-                DefectRates.builder()
-                        .placeComponentsDefectRate(defectRatesConfig.getPlaceComponentsDefectRate())
-                        .opticalInspectionDefectRate(
-                                defectRatesConfig.getOpticalInspectionDefectRate())
-                        .handSolderingDefectRate(defectRatesConfig.getHandSolderingDefectRate())
-                        .testDefectRate(defectRatesConfig.getTestDefectRate())
-                        .build();
+        this.defectRates = defectRates;
     }
 
     @Override

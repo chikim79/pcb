@@ -1,7 +1,5 @@
 package com.cu5448.pcb.model;
 
-import com.cu5448.pcb.config.PCBProperties;
-
 import lombok.EqualsAndHashCode;
 
 /** Gateway Board PCB Implementation using Lombok */
@@ -10,22 +8,9 @@ public class GatewayBoard extends PCB {
 
     private final DefectRates defectRates;
 
-    public GatewayBoard() {
+    public GatewayBoard(DefectRates defectRates) {
         super("GatewayBoard");
-        // Default rates for backward compatibility
-        this.defectRates = DefectRates.gatewayBoardDefaults();
-    }
-
-    public GatewayBoard(PCBProperties.GatewayBoardDefectRates defectRatesConfig) {
-        super("GatewayBoard");
-        this.defectRates =
-                DefectRates.builder()
-                        .placeComponentsDefectRate(defectRatesConfig.getPlaceComponentsDefectRate())
-                        .opticalInspectionDefectRate(
-                                defectRatesConfig.getOpticalInspectionDefectRate())
-                        .handSolderingDefectRate(defectRatesConfig.getHandSolderingDefectRate())
-                        .testDefectRate(defectRatesConfig.getTestDefectRate())
-                        .build();
+        this.defectRates = defectRates;
     }
 
     @Override

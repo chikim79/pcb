@@ -23,11 +23,12 @@ public class PCBFactory {
 
     public PCB createPCB(String type) {
         return switch (type.toLowerCase()) {
-            case "testboard", "test", "test board" -> new TestBoard(pcbProperties.getTestboard());
+            case "testboard", "test", "test board" ->
+                    new TestBoard(pcbProperties.getTestboardDefectRates());
             case "sensorboard", "sensor", "sensor board" ->
-                    new SensorBoard(pcbProperties.getSensorboard());
+                    new SensorBoard(pcbProperties.getSensorboardDefectRates());
             case "gatewayboard", "gateway", "gateway board" ->
-                    new GatewayBoard(pcbProperties.getGatewayboard());
+                    new GatewayBoard(pcbProperties.getGatewayboardDefectRates());
             default -> throw new IllegalArgumentException("Unknown PCB type: " + type);
         };
     }
