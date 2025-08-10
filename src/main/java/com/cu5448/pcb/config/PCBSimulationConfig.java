@@ -22,19 +22,19 @@ public class PCBSimulationConfig {
     private final StationFactory stationFactory;
 
     /**
-     * Creates ordered list of stations for the assembly line using the factory. This ensures
-     * consistent station creation and proper manufacturing process flow.
+     * Creates ordered list of stations for the assembly line using the abstract factory pattern.
+     * This ensures consistent station creation and proper manufacturing process flow.
      */
     @Bean
     public List<Station> createAssemblyLineStations() {
         return List.of(
-                stationFactory.createApplySolderPasteStation(),
-                stationFactory.createPlaceComponentsStation(),
-                stationFactory.createReflowSolderStation(),
-                stationFactory.createOpticalInspectionStation(),
-                stationFactory.createHandSolderingStation(),
-                stationFactory.createCleaningStation(),
-                stationFactory.createDepanelizationStation(),
-                stationFactory.createTestStation());
+                stationFactory.createStation("ApplySolderPaste"),
+                stationFactory.createStation("PlaceComponents"),
+                stationFactory.createStation("ReflowSolder"),
+                stationFactory.createStation("OpticalInspection"),
+                stationFactory.createStation("HandSoldering"),
+                stationFactory.createStation("Cleaning"),
+                stationFactory.createStation("Depanelization"),
+                stationFactory.createStation("Test"));
     }
 }

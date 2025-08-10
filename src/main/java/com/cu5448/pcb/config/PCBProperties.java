@@ -16,48 +16,9 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "pcb")
 public class PCBProperties {
 
-    /** Creates DefectRates for TestBoard from configuration properties. */
-    public DefectRates getTestboardDefectRates() {
-        return DefectRates.builder()
-                .placeComponentsDefectRate(testboard.placeComponentsDefectRate)
-                .opticalInspectionDefectRate(testboard.opticalInspectionDefectRate)
-                .handSolderingDefectRate(testboard.handSolderingDefectRate)
-                .testDefectRate(testboard.testDefectRate)
-                .build();
-    }
+    private DefectRates testboard = new DefectRates();
 
-    /** Creates DefectRates for SensorBoard from configuration properties. */
-    public DefectRates getSensorboardDefectRates() {
-        return DefectRates.builder()
-                .placeComponentsDefectRate(sensorboard.placeComponentsDefectRate)
-                .opticalInspectionDefectRate(sensorboard.opticalInspectionDefectRate)
-                .handSolderingDefectRate(sensorboard.handSolderingDefectRate)
-                .testDefectRate(sensorboard.testDefectRate)
-                .build();
-    }
+    private DefectRates sensorboard = new DefectRates();
 
-    /** Creates DefectRates for GatewayBoard from configuration properties. */
-    public DefectRates getGatewayboardDefectRates() {
-        return DefectRates.builder()
-                .placeComponentsDefectRate(gatewayboard.placeComponentsDefectRate)
-                .opticalInspectionDefectRate(gatewayboard.opticalInspectionDefectRate)
-                .handSolderingDefectRate(gatewayboard.handSolderingDefectRate)
-                .testDefectRate(gatewayboard.testDefectRate)
-                .build();
-    }
-
-    // Nested configuration classes for property binding
-    private BoardConfig testboard = new BoardConfig();
-
-    private BoardConfig sensorboard = new BoardConfig();
-
-    private BoardConfig gatewayboard = new BoardConfig();
-
-    @Data
-    public static class BoardConfig {
-        private double placeComponentsDefectRate;
-        private double opticalInspectionDefectRate;
-        private double handSolderingDefectRate;
-        private double testDefectRate;
-    }
+    private DefectRates gatewayboard = new DefectRates();
 }

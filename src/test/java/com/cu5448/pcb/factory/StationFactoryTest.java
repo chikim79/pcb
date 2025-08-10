@@ -21,100 +21,93 @@ class StationFactoryTest {
 
     @Test
     void testCreateIndividualStations() {
-        // Test each station creation method
-        Station applySolderPaste = stationFactory.createApplySolderPasteStation();
+        // Test station creation using abstract factory method
+        Station applySolderPaste = stationFactory.createStation("ApplySolderPaste");
         assertNotNull(applySolderPaste);
         assertEquals("ApplySolderPaste", applySolderPaste.getName());
 
-        Station placeComponents = stationFactory.createPlaceComponentsStation();
+        Station placeComponents = stationFactory.createStation("PlaceComponents");
         assertNotNull(placeComponents);
         assertEquals("PlaceComponents", placeComponents.getName());
 
-        Station reflowSolder = stationFactory.createReflowSolderStation();
+        Station reflowSolder = stationFactory.createStation("ReflowSolder");
         assertNotNull(reflowSolder);
         assertEquals("ReflowSolder", reflowSolder.getName());
 
-        Station opticalInspection = stationFactory.createOpticalInspectionStation();
+        Station opticalInspection = stationFactory.createStation("OpticalInspection");
         assertNotNull(opticalInspection);
         assertEquals("OpticalInspection", opticalInspection.getName());
 
-        Station handSoldering = stationFactory.createHandSolderingStation();
+        Station handSoldering = stationFactory.createStation("HandSoldering");
         assertNotNull(handSoldering);
         assertEquals("HandSoldering", handSoldering.getName());
 
-        Station cleaning = stationFactory.createCleaningStation();
+        Station cleaning = stationFactory.createStation("Cleaning");
         assertNotNull(cleaning);
         assertEquals("Cleaning", cleaning.getName());
 
-        Station depanelization = stationFactory.createDepanelizationStation();
+        Station depanelization = stationFactory.createStation("Depanelization");
         assertNotNull(depanelization);
         assertEquals("Depanelization", depanelization.getName());
 
-        Station test = stationFactory.createTestStation();
+        Station test = stationFactory.createStation("Test");
         assertNotNull(test);
         assertEquals("Test", test.getName());
     }
 
     @Test
     void testCreateStationByType() {
-        // Test station creation by type name
-        Station applySolder = stationFactory.createStationByType("ApplySolderPaste");
+        // Test station creation by type name using abstract factory
+        Station applySolder = stationFactory.createStation("ApplySolderPaste");
         assertInstanceOf(ApplySolderPasteStation.class, applySolder);
         assertEquals("ApplySolderPaste", applySolder.getName());
 
-        Station placeComponents = stationFactory.createStationByType("PlaceComponents");
+        Station placeComponents = stationFactory.createStation("PlaceComponents");
         assertInstanceOf(PlaceComponentsStation.class, placeComponents);
         assertEquals("PlaceComponents", placeComponents.getName());
 
-        Station test = stationFactory.createStationByType("Test");
+        Station test = stationFactory.createStation("Test");
         assertInstanceOf(TestStation.class, test);
         assertEquals("Test", test.getName());
-
-        // Test camelCase variants
-        Station camelCaseTest = stationFactory.createStationByType("applySolderPaste");
-        assertInstanceOf(ApplySolderPasteStation.class, camelCaseTest);
-
-        Station camelCasePlace = stationFactory.createStationByType("placeComponents");
-        assertInstanceOf(PlaceComponentsStation.class, camelCasePlace);
     }
 
     @Test
     void testCreateStationByTypeInvalid() {
-        // Test invalid station type
+        // Test invalid station type using abstract factory
         assertThrows(
                 IllegalArgumentException.class,
-                () -> stationFactory.createStationByType("InvalidStation"),
+                () -> stationFactory.createStation("InvalidStation"),
                 "Should throw exception for invalid station type");
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> stationFactory.createStationByType(""),
+                () -> stationFactory.createStation(""),
                 "Should throw exception for empty station type");
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> stationFactory.createStationByType("SomeRandomName"),
+                () -> stationFactory.createStation("SomeRandomName"),
                 "Should throw exception for random station type");
     }
 
     @Test
     void testAllStationTypesSupported() {
-        // Test all expected station types are supported by createStationByType
+        // Test all expected station types are supported by abstract factory
         String[] stationTypes = {
-            "ApplySolderPaste", "applySolderPaste",
-            "PlaceComponents", "placeComponents",
-            "ReflowSolder", "reflowSolder",
-            "OpticalInspection", "opticalInspection",
-            "HandSoldering", "handSoldering",
-            "Cleaning", "cleaning",
-            "Depanelization", "depanelization",
-            "Test", "test"
+            "ApplySolderPaste",
+            "PlaceComponents",
+            "ReflowSolder",
+            "OpticalInspection",
+            "HandSoldering",
+            "Cleaning",
+            "Depanelization",
+            "Test"
         };
 
         for (String stationType : stationTypes) {
             assertDoesNotThrow(
                     () -> {
-                        Station station = stationFactory.createStationByType(stationType);
+                        Station station = stationFactory.createStation(stationType);
                         assertNotNull(
                                 station, "Station should be created for type: " + stationType);
                     },

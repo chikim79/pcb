@@ -3,6 +3,7 @@ package com.cu5448.pcb.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * DefectRates encapsulates defect rates for different manufacturing stations. This class replaces
@@ -14,12 +15,13 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class DefectRates {
 
-    private final double placeComponentsDefectRate;
-    private final double opticalInspectionDefectRate;
-    private final double handSolderingDefectRate;
-    private final double testDefectRate;
+    private double placeComponentsDefectRate;
+    private double opticalInspectionDefectRate;
+    private double handSolderingDefectRate;
+    private double testDefectRate;
 
     /**
      * Gets the defect rate for a specific station type.
