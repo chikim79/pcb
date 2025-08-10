@@ -1,33 +1,29 @@
 package com.cu5448.pcb.config;
 
-import com.cu5448.pcb.controller.SimulationController;
-import com.cu5448.pcb.factory.PCBFactory;
-import com.cu5448.pcb.service.AssemblyLine;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.*;
+
+import com.cu5448.pcb.controller.SimulationController;
+import com.cu5448.pcb.factory.PCBFactory;
+import com.cu5448.pcb.service.AssemblyLine;
 
 @SpringBootTest
 class SpringConfigurationTest {
 
-    @Autowired
-    private SimulationController simulationController;
+    @Autowired private SimulationController simulationController;
 
-    @Autowired
-    private AssemblyLine assemblyLine;
+    @Autowired private AssemblyLine assemblyLine;
 
-    @Autowired
-    private PCBFactory pcbFactory;
+    @Autowired private PCBFactory pcbFactory;
 
-    @Autowired
-    private SimulationProperties simulationProperties;
+    @Autowired private SimulationProperties simulationProperties;
 
-    @Autowired
-    private StationProperties stationProperties;
+    @Autowired private StationProperties stationProperties;
 
-    @Autowired
-    private PCBProperties pcbProperties;
+    @Autowired private PCBProperties pcbProperties;
 
     @Test
     void testSpringDependencyInjection() {
@@ -42,7 +38,7 @@ class SpringConfigurationTest {
         // Verify that configuration properties are loaded correctly
         assertEquals(1000, simulationProperties.getPcbQuantity());
         assertEquals(0.002, stationProperties.getFailureRate(), 0.0001);
-        
+
         // Test PCB defect rates from properties (using Lombok-generated getters)
         assertEquals(0.05, pcbProperties.getTestboard().getPlaceComponentsDefectRate(), 0.0001);
         assertEquals(0.002, pcbProperties.getSensorboard().getPlaceComponentsDefectRate(), 0.0001);
@@ -55,7 +51,7 @@ class SpringConfigurationTest {
         var testBoard = pcbFactory.createPCB("Test Board");
         assertEquals("TestBoard", testBoard.getType());
         assertEquals(0.05, testBoard.getDefectRate("PlaceComponents"), 0.0001);
-        
+
         var sensorBoard = pcbFactory.createPCB("Sensor Board");
         assertEquals("SensorBoard", sensorBoard.getType());
         assertEquals(0.002, sensorBoard.getDefectRate("PlaceComponents"), 0.0001);

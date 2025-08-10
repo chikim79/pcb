@@ -1,34 +1,42 @@
 package com.cu5448.pcb.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
+
 import com.cu5448.pcb.config.PCBSimulationConfig;
 import com.cu5448.pcb.config.SimulationProperties;
 import com.cu5448.pcb.factory.PCBFactory;
 import com.cu5448.pcb.model.PCB;
 import com.cu5448.pcb.station.*;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
- * Assembly Line Service using Spring Dependency Injection and Lombok
- * 
- * @RequiredArgsConstructor generates constructor for all final fields
- * This service coordinates the PCB manufacturing process through all stations.
+ * Assembly Line Service using Spring Dependency Injection and Lombok @RequiredArgsConstructor
+ * generates constructor for all final fields This service coordinates the PCB manufacturing process
+ * through all stations.
  */
 @Service
 @RequiredArgsConstructor
 public class AssemblyLine {
+
     private final List<Station> stations = new ArrayList<>();
+
     private final PCBFactory factory;
+
     private final SimulationProperties simulationProperties;
+
     private final ApplicationContext applicationContext;
+
     private final PCBSimulationConfig config;
 
     private void initializeStations(StatisticsCollector stats) {
         stations.clear();
-        // Create stations with configuration-driven settings and specific StatisticsCollector
+        // Create stations with configuration-driven settings and specific
+        // StatisticsCollector
         stations.add(config.createApplySolderPasteStation(stats));
         stations.add(config.createPlaceComponentsStation(stats));
         stations.add(config.createReflowSolderStation(stats));
@@ -52,18 +60,18 @@ public class AssemblyLine {
         // Get a new prototype instance of StatisticsCollector for this simulation
         StatisticsCollector stats = applicationContext.getBean(StatisticsCollector.class);
         initializeStations(stats);
-        
+
         for (int i = 0; i < quantity; i++) {
             PCB pcb = factory.createPCB(pcbType);
             stats.recordSubmission();
-            
+
             processPCB(pcb);
-            
+
             if (!pcb.isFailed()) {
                 stats.recordCompletion();
             }
         }
-        
+
         return stats;
     }
 

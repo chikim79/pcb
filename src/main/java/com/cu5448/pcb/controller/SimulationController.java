@@ -1,24 +1,29 @@
 package com.cu5448.pcb.controller;
 
-import com.cu5448.pcb.config.SimulationProperties;
-import com.cu5448.pcb.service.AssemblyLine;
-import com.cu5448.pcb.service.StatisticsCollector;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
+import com.cu5448.pcb.config.SimulationProperties;
+import com.cu5448.pcb.service.AssemblyLine;
+import com.cu5448.pcb.service.StatisticsCollector;
+
+import lombok.RequiredArgsConstructor;
+
 /**
- * Main Simulation Controller using Spring Dependency Injection and Lombok
- * 
- * @RequiredArgsConstructor generates constructor for final fields
- * This controller orchestrates PCB simulations and manages results.
+ * Main Simulation Controller using Spring Dependency Injection and Lombok @RequiredArgsConstructor
+ * generates constructor for final fields This controller orchestrates PCB simulations and manages
+ * results.
  */
 @Component
 @RequiredArgsConstructor
 public class SimulationController {
+
     private final AssemblyLine assemblyLine;
+
     private final SimulationProperties simulationProperties;
+
     private final Map<String, StatisticsCollector> results = new HashMap<>();
 
     public void runSimulation(String pcbType, int quantity) {
@@ -26,7 +31,7 @@ public class SimulationController {
         results.put(pcbType, stats);
         printResults(pcbType);
     }
-    
+
     public void runSimulation(String pcbType) {
         runSimulation(pcbType, simulationProperties.getPcbQuantity());
     }

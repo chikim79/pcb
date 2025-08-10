@@ -1,7 +1,8 @@
 package com.cu5448.pcb.model;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 class PCBTest {
 
@@ -41,7 +42,7 @@ class PCBTest {
         TestBoard board = new TestBoard();
         assertFalse(board.isFailed());
         assertNull(board.getFailureReason());
-        
+
         board.setFailed("Test failure");
         assertTrue(board.isFailed());
         assertEquals("Test failure", board.getFailureReason());

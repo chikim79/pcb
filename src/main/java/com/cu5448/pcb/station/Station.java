@@ -1,23 +1,25 @@
 package com.cu5448.pcb.station;
 
-import com.cu5448.pcb.model.PCB;
-import com.cu5448.pcb.service.StatisticsCollector;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import java.util.Random;
 
+import com.cu5448.pcb.model.PCB;
+import com.cu5448.pcb.service.StatisticsCollector;
+
+import lombok.Getter;
+
 /**
- * Abstract Station class using Lombok
- * 
- * @Getter generates getter methods for all fields
- * @RequiredArgsConstructor would generate constructor, but we need custom logic
+ * Abstract Station class using Lombok @Getter generates getter methods for all
+ * fields @RequiredArgsConstructor would generate constructor, but we need custom logic
  */
 @Getter
 public abstract class Station {
+
     protected final String name;
+
     protected final double stationFailureRate;
+
     protected final StatisticsCollector stats;
+
     protected final Random random;
 
     public Station(String name, double failureRate, StatisticsCollector stats) {
@@ -52,4 +54,5 @@ public abstract class Station {
     protected abstract boolean performOperation(PCB pcb);
 
     // Lombok @Getter annotation generates getName() and getStationFailureRate() methods
+
 }

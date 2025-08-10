@@ -1,8 +1,9 @@
 package com.cu5448.pcb.service;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class StatisticsCollectorTest {
 
@@ -40,7 +41,7 @@ class StatisticsCollectorTest {
         stats.recordDefectFailure("PlaceComponents");
         stats.recordDefectFailure("PlaceComponents");
         stats.recordDefectFailure("Test");
-        
+
         assertEquals(2, stats.getDefectFailures().get("PlaceComponents"));
         assertEquals(1, stats.getDefectFailures().get("Test"));
     }
@@ -49,7 +50,7 @@ class StatisticsCollectorTest {
     void testRecordStationFailure() {
         stats.recordStationFailure("ApplySolderPaste");
         stats.recordStationFailure("Cleaning");
-        
+
         assertEquals(1, stats.getStationFailures().get("ApplySolderPaste"));
         assertEquals(1, stats.getStationFailures().get("Cleaning"));
     }
@@ -61,9 +62,9 @@ class StatisticsCollectorTest {
         stats.recordCompletion();
         stats.recordDefectFailure("Test");
         stats.recordStationFailure("Cleaning");
-        
+
         String report = stats.generateReport("Test Board");
-        
+
         assertTrue(report.contains("PCB type: Test Board"));
         assertTrue(report.contains("PCBs run: 2"));
         assertTrue(report.contains("Total failed PCBs: 1"));

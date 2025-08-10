@@ -4,7 +4,7 @@ import com.cu5448.pcb.model.PCB;
 import com.cu5448.pcb.service.StatisticsCollector;
 
 public class CleaningStation extends Station {
-    
+
     public CleaningStation(double failureRate, StatisticsCollector stats) {
         super("Cleaning", failureRate, stats);
     }

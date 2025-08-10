@@ -1,16 +1,19 @@
 package com.cu5448.pcb.factory;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.cu5448.pcb.config.PCBProperties;
 import com.cu5448.pcb.model.*;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import static org.junit.jupiter.api.Assertions.*;
 
 class PCBFactoryTest {
 
     private PCBFactory factory;
+
     private PCBProperties pcbProperties;
-    
+
     @BeforeEach
     void setUp() {
         pcbProperties = new PCBProperties();
