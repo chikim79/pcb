@@ -25,8 +25,6 @@ public class PcbApplication {
 
     @Bean
     public CommandLineRunner run(SimulationController controller) {
-        return args -> {
-            controller.runAllSimulations();
-        };
+        return args -> controller.runAllSimulations();
     }
 }
