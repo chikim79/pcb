@@ -50,12 +50,4 @@ public class SimulationController {
             System.out.printf("No results found for PCB type: %s\n", pcbType);
         }
     }
-
-    public StatisticsCollector getResults(String pcbType) {
-        return results.get(pcbType);
-    }
-
-    public Map<String, StatisticsCollector> getAllResults() {
-        return new HashMap<>(results);
-    }
 }

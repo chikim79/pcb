@@ -57,16 +57,6 @@ class DefectRatesTest {
     }
 
     @Test
-    void testNoDefectsFactory() {
-        DefectRates rates = DefectRates.noDefects();
-
-        assertEquals(0.0, rates.getDefectRate("PlaceComponents"));
-        assertEquals(0.0, rates.getDefectRate("OpticalInspection"));
-        assertEquals(0.0, rates.getDefectRate("HandSoldering"));
-        assertEquals(0.0, rates.getDefectRate("Test"));
-    }
-
-    @Test
     void testPCBIntegration() {
         // Test that PCB implementations can use DefectRates
         DefectRates testRates =

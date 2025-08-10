@@ -38,14 +38,4 @@ public class DefectRates {
             default -> 0.0; // Stations that don't detect defects
         };
     }
-
-    /** Creates DefectRates with all rates set to zero. */
-    public static DefectRates noDefects() {
-        return DefectRates.builder()
-                .placeComponentsDefectRate(0.0)
-                .opticalInspectionDefectRate(0.0)
-                .handSolderingDefectRate(0.0)
-                .testDefectRate(0.0)
-                .build();
-    }
 }
