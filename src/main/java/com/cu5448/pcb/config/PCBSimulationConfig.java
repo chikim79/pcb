@@ -1,18 +1,17 @@
 package com.cu5448.pcb.config;
 
+import java.util.List;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.cu5448.pcb.service.StatisticsCollector;
 import com.cu5448.pcb.station.*;
 
 import lombok.RequiredArgsConstructor;
 
 /**
- * Spring Configuration Class implementing Dependency Injection Design Pattern using
- * Lombok @RequiredArgsConstructor generates constructor for final fields, enabling constructor
- * injection This configuration class demonstrates the Dependency Injection pattern by: 1.
- * Centralizing bean creation and wiring 2. Managing dependencies between components 3. Enabling
- * Spring IoC container to manage object lifecycle
+ * Spring Configuration Class for PCB Assembly Line Stations. Creates all manufacturing stations as
+ * Spring beans for dependency injection into AssemblyLine.
  */
 @Configuration
 @RequiredArgsConstructor
@@ -20,44 +19,69 @@ public class PCBSimulationConfig {
 
     private final StationProperties stationProperties;
 
+    @Bean
+    public ApplySolderPasteStation applySolderPasteStation() {
+        return new ApplySolderPasteStation(stationProperties.getFailureRate());
+    }
+
+    @Bean
+    public PlaceComponentsStation placeComponentsStation() {
+        return new PlaceComponentsStation(stationProperties.getFailureRate());
+    }
+
+    @Bean
+    public ReflowSolderStation reflowSolderStation() {
+        return new ReflowSolderStation(stationProperties.getFailureRate());
+    }
+
+    @Bean
+    public OpticalInspectionStation opticalInspectionStation() {
+        return new OpticalInspectionStation(stationProperties.getFailureRate());
+    }
+
+    @Bean
+    public HandSolderingStation handSolderingStation() {
+        return new HandSolderingStation(stationProperties.getFailureRate());
+    }
+
+    @Bean
+    public CleaningStation cleaningStation() {
+        return new CleaningStation(stationProperties.getFailureRate());
+    }
+
+    @Bean
+    public DepanelizationStation depanelizationStation() {
+        return new DepanelizationStation(stationProperties.getFailureRate());
+    }
+
+    @Bean
+    public TestStation testStation() {
+        return new TestStation(stationProperties.getFailureRate());
+    }
+
     /**
-     * Factory Pattern Implementation - Creates PCB instances PCBFactory is already annotated
-     * with @Component, so this is optional
+     * Creates ordered list of stations for the assembly line. Order matches the manufacturing
+     * process flow.
      */
+    @Bean
+    public List<Station> assemblyLineStations(
+            ApplySolderPasteStation applySolderPasteStation,
+            PlaceComponentsStation placeComponentsStation,
+            ReflowSolderStation reflowSolderStation,
+            OpticalInspectionStation opticalInspectionStation,
+            HandSolderingStation handSolderingStation,
+            CleaningStation cleaningStation,
+            DepanelizationStation depanelizationStation,
+            TestStation testStation) {
 
-    /**
-     * Station Factory Methods - Create stations with configured failure rates These are not @Bean
-     * methods since stations need different StatisticsCollector instances per simulation
-     */
-    public ApplySolderPasteStation createApplySolderPasteStation(StatisticsCollector stats) {
-        return new ApplySolderPasteStation(stationProperties.getFailureRate(), stats);
-    }
-
-    public PlaceComponentsStation createPlaceComponentsStation(StatisticsCollector stats) {
-        return new PlaceComponentsStation(stationProperties.getFailureRate(), stats);
-    }
-
-    public ReflowSolderStation createReflowSolderStation(StatisticsCollector stats) {
-        return new ReflowSolderStation(stationProperties.getFailureRate(), stats);
-    }
-
-    public OpticalInspectionStation createOpticalInspectionStation(StatisticsCollector stats) {
-        return new OpticalInspectionStation(stationProperties.getFailureRate(), stats);
-    }
-
-    public HandSolderingStation createHandSolderingStation(StatisticsCollector stats) {
-        return new HandSolderingStation(stationProperties.getFailureRate(), stats);
-    }
-
-    public CleaningStation createCleaningStation(StatisticsCollector stats) {
-        return new CleaningStation(stationProperties.getFailureRate(), stats);
-    }
-
-    public DepanelizationStation createDepanelizationStation(StatisticsCollector stats) {
-        return new DepanelizationStation(stationProperties.getFailureRate(), stats);
-    }
-
-    public TestStation createTestStation(StatisticsCollector stats) {
-        return new TestStation(stationProperties.getFailureRate(), stats);
+        return List.of(
+                applySolderPasteStation,
+                placeComponentsStation,
+                reflowSolderStation,
+                opticalInspectionStation,
+                handSolderingStation,
+                cleaningStation,
+                depanelizationStation,
+                testStation);
     }
 }

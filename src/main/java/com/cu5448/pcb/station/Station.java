@@ -8,8 +8,8 @@ import com.cu5448.pcb.service.StatisticsCollector;
 import lombok.Getter;
 
 /**
- * Abstract Station class using Lombok @Getter generates getter methods for all
- * fields @RequiredArgsConstructor would generate constructor, but we need custom logic
+ * Abstract Station class that can be used as a Spring bean. StatisticsCollector is injected per
+ * simulation run rather than at construction time.
  */
 @Getter
 public abstract class Station {
@@ -18,17 +18,14 @@ public abstract class Station {
 
     protected final double stationFailureRate;
 
-    protected final StatisticsCollector stats;
-
     protected final Random random = new Random();
 
-    public Station(String name, double failureRate, StatisticsCollector stats) {
+    public Station(String name, double failureRate) {
         this.name = name;
         this.stationFailureRate = failureRate;
-        this.stats = stats;
     }
 
-    public void process(PCB pcb) {
+    public void process(PCB pcb, StatisticsCollector stats) {
         if (pcb.isFailed()) {
             return;
         }

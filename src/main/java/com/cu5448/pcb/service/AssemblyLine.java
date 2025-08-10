@@ -1,29 +1,26 @@
 package com.cu5448.pcb.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import com.cu5448.pcb.config.PCBSimulationConfig;
 import com.cu5448.pcb.config.SimulationProperties;
 import com.cu5448.pcb.factory.PCBFactory;
 import com.cu5448.pcb.model.PCB;
-import com.cu5448.pcb.station.*;
+import com.cu5448.pcb.station.Station;
 
 import lombok.RequiredArgsConstructor;
 
 /**
- * Assembly Line Service using Spring Dependency Injection and Lombok @RequiredArgsConstructor
- * generates constructor for all final fields This service coordinates the PCB manufacturing process
- * through all stations.
+ * Assembly Line Service using Spring Dependency Injection. Station beans are injected as an ordered
+ * list, eliminating the need for manual station creation and initialization.
  */
 @Service
 @RequiredArgsConstructor
 public class AssemblyLine {
 
-    private final List<Station> stations = new ArrayList<>();
+    private final List<Station> stations;
 
     private final PCBFactory factory;
 
@@ -31,25 +28,9 @@ public class AssemblyLine {
 
     private final ApplicationContext applicationContext;
 
-    private final PCBSimulationConfig config;
-
-    private void initializeStations(StatisticsCollector stats) {
-        stations.clear();
-        // Create stations with configuration-driven settings and specific
-        // StatisticsCollector
-        stations.add(config.createApplySolderPasteStation(stats));
-        stations.add(config.createPlaceComponentsStation(stats));
-        stations.add(config.createReflowSolderStation(stats));
-        stations.add(config.createOpticalInspectionStation(stats));
-        stations.add(config.createHandSolderingStation(stats));
-        stations.add(config.createCleaningStation(stats));
-        stations.add(config.createDepanelizationStation(stats));
-        stations.add(config.createTestStation(stats));
-    }
-
-    public void processPCB(PCB pcb) {
+    public void processPCB(PCB pcb, StatisticsCollector stats) {
         for (Station station : stations) {
-            station.process(pcb);
+            station.process(pcb, stats);
             if (pcb.isFailed()) {
                 break;
             }
@@ -59,13 +40,12 @@ public class AssemblyLine {
     public StatisticsCollector runSimulation(String pcbType, int quantity) {
         // Get a new prototype instance of StatisticsCollector for this simulation
         StatisticsCollector stats = applicationContext.getBean(StatisticsCollector.class);
-        initializeStations(stats);
 
         for (int i = 0; i < quantity; i++) {
             PCB pcb = factory.createPCB(pcbType);
             stats.recordSubmission();
 
-            processPCB(pcb);
+            processPCB(pcb, stats);
 
             if (!pcb.isFailed()) {
                 stats.recordCompletion();
@@ -80,6 +60,6 @@ public class AssemblyLine {
     }
 
     public List<Station> getStations() {
-        return new ArrayList<>(stations);
+        return List.copyOf(stations);
     }
 }

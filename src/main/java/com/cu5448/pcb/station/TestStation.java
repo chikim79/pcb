@@ -1,7 +1,6 @@
 package com.cu5448.pcb.station;
 
 import com.cu5448.pcb.model.PCB;
-import com.cu5448.pcb.service.StatisticsCollector;
 
 import lombok.EqualsAndHashCode;
 
@@ -9,8 +8,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class TestStation extends Station {
 
-    public TestStation(double failureRate, StatisticsCollector stats) {
-        super("Test", failureRate, stats);
+    public TestStation(double failureRate) {
+        super("Test", failureRate);
     }
 
     @Override

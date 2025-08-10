@@ -1,7 +1,6 @@
 package com.cu5448.pcb.station;
 
 import com.cu5448.pcb.model.PCB;
-import com.cu5448.pcb.service.StatisticsCollector;
 
 import lombok.EqualsAndHashCode;
 
@@ -9,8 +8,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class HandSolderingStation extends Station {
 
-    public HandSolderingStation(double failureRate, StatisticsCollector stats) {
-        super("HandSoldering", failureRate, stats);
+    public HandSolderingStation(double failureRate) {
+        super("HandSoldering", failureRate);
     }
 
     @Override
