@@ -1,134 +1,205 @@
-@startuml PCB_Assembly_Simulation
+@startuml PCB_Assembly_Simulation_Spring_DI
 
+!theme plain
 skinparam classAttributeIconSize 0
+skinparam direction top to bottom
 skinparam class {
+    BackgroundColor<<Spring>> LightGreen
+    BorderColor<<Spring>> DarkGreen
     BackgroundColor<<Pattern>> LightYellow
     BorderColor<<Pattern>> DarkGoldenRod
     BackgroundColor<<Abstract>> LightBlue
     BorderColor<<Abstract>> DarkBlue
+    BackgroundColor<<Config>> LightCyan
+    BorderColor<<Config>> DarkCyan
 }
 
-' PCB Hierarchy
-abstract class PCB {
-    - id: String
-    - type: String
-    - failed: boolean
-    - failureReason: String
-    + PCB(type: String)
-    + getType(): String
-    + setFailed(reason: String): void
-    + isFailed(): boolean
-    + {abstract} getDefectRate(stationType: String): double
+' Main Application Entry Point
+class PcbApplication <<Spring>> {
+    + main(String[] args): void
+    @Bean CommandLineRunner run(controller): CommandLineRunner
 }
 
-class TestBoard {
-    - defectRates: Map<String, Double>
-    + TestBoard()
-    + getDefectRate(stationType: String): double
+' Top Level - Configuration Layer
+package "Configuration Layer" <<Config>> {
+    class PCBSimulationConfig <<Spring>> {
+        - stationFactory: StationFactory {final}
+        @Bean createAssemblyLineStations(): List<Station>
+    }
+    
+    class PCBProperties <<Spring>> {
+        @ConfigurationProperties(prefix = "pcb")
+        - testboard: DefectRates
+        - sensorboard: DefectRates
+        - gatewayboard: DefectRates
+        + getTestboard(): DefectRates
+        + getSensorboard(): DefectRates
+        + getGatewayboard(): DefectRates
+    }
+    
+    class StationProperties <<Spring>> {
+        @ConfigurationProperties(prefix = "station")
+        - failureRate: double
+        + getFailureRate(): double
+    }
 }
 
-class SensorBoard {
-    - defectRates: Map<String, Double>
-    + SensorBoard()
-    + getDefectRate(stationType: String): double
+' Controller Layer
+package "Controller Layer" {
+    class SimulationController <<Spring>> {
+        - assemblyLine: AssemblyLine {final}
+        - pcbFactory: PCBFactory {final}
+        + SimulationController(assemblyLine, pcbFactory)
+        + runAllSimulations(): void
+    }
 }
 
-class GatewayBoard {
-    - defectRates: Map<String, Double>
-    + GatewayBoard()
-    + getDefectRate(stationType: String): double
+' Service Layer
+package "Service Layer" {
+    class AssemblyLine <<Spring>> {
+        - stations: List<Station> {final}
+        + AssemblyLine(stations: List<Station>)
+        + processPCB(pcb: PCB, stats: StatisticsCollector): void
+        + getStations(): List<Station>
+    }
+    
+    class StatisticsCollector {
+        - pcbsSubmitted: int
+        - defectFailures: Map<String, Integer>
+        - stationFailures: Map<String, Integer>
+        - completedPCBs: int
+        + recordSubmission(): void
+        + recordDefectFailure(station: String): void
+        + recordStationFailure(station: String): void
+        + recordCompletion(): void
+        + generateReport(pcbType: String): String
+    }
 }
 
-' Station Hierarchy
-abstract class Station {
-    - name: String
-    - stationFailureRate: double
-    - stats: StatisticsCollector
-    + Station(failureRate: double, stats: StatisticsCollector)
-    + process(pcb: PCB): void
-    + checkStationFailure(): boolean
-    # {abstract} performOperation(pcb: PCB): boolean
+' Factory Layer
+package "Factory Layer" {
+    class PCBFactory <<Spring,Pattern>> {
+        - pcbProperties: PCBProperties {final}
+        + PCBFactory(pcbProperties: PCBProperties)
+        + createPCB(type: String): PCB
+    }
+    
+    class StationFactory <<Spring,Pattern>> {
+        - stationProperties: StationProperties {final}
+        - stationRegistry: Map<String, Function<Double, Station>> {final}
+        + StationFactory(stationProperties: StationProperties)
+        + createStation(stationType: String): Station
+        + createStation(stationClass: Class<T>): T
+    }
 }
 
-class ApplySolderPasteStation {
-    + ApplySolderPasteStation(failureRate: double, stats: StatisticsCollector)
-    # performOperation(pcb: PCB): boolean
+' Model Layer - PCB Hierarchy
+package "PCB Model Layer" {
+    class DefectRates {
+        @NoArgsConstructor @AllArgsConstructor
+        - placeComponentsDefectRate: double
+        - opticalInspectionDefectRate: double
+        - handSolderingDefectRate: double
+        - testDefectRate: double
+        + getDefectRate(stationType: String): double
+        + noDefects(): DefectRates {static}
+    }
+    
+    abstract class PCB <<Abstract>> {
+        - id: String
+        - type: String
+        - failed: boolean
+        - failureReason: String
+        + PCB(type: String)
+        + getType(): String
+        + setFailed(reason: String): void
+        + isFailed(): boolean
+        + {abstract} getDefectRate(stationType: String): double
+        + {abstract} getDefectRates(): DefectRates
+    }
+    
+    class TestBoard {
+        - defectRates: DefectRates {final}
+        + TestBoard(defectRates: DefectRates)
+        + getDefectRate(stationType: String): double
+        + getDefectRates(): DefectRates
+    }
+    
+    class SensorBoard {
+        - defectRates: DefectRates {final}
+        + SensorBoard(defectRates: DefectRates)
+        + getDefectRate(stationType: String): double
+        + getDefectRates(): DefectRates
+    }
+    
+    class GatewayBoard {
+        - defectRates: DefectRates {final}
+        + GatewayBoard(defectRates: DefectRates)
+        + getDefectRate(stationType: String): double
+        + getDefectRates(): DefectRates
+    }
 }
 
-class PlaceComponentsStation {
-    + PlaceComponentsStation(failureRate: double, stats: StatisticsCollector)
-    # performOperation(pcb: PCB): boolean
+' Station Model Layer
+package "Station Model Layer" {
+    abstract class Station <<Abstract>> {
+        - name: String {final}
+        - stationFailureRate: double {final}
+        + Station(name: String, failureRate: double)
+        + process(pcb: PCB, stats: StatisticsCollector): void
+        + checkStationFailure(): boolean
+        # {abstract} performOperation(pcb: PCB, stats: StatisticsCollector): boolean
+    }
 }
 
-class ReflowSolderStation {
-    + ReflowSolderStation(failureRate: double, stats: StatisticsCollector)
-    # performOperation(pcb: PCB): boolean
+' Station Implementation Layer - Arranged in Two Columns
+package "Station Implementations" {
+    together {
+        class ApplySolderPasteStation {
+            + ApplySolderPasteStation(failureRate: double)
+            # performOperation(pcb, stats): boolean
+        }
+        
+        class PlaceComponentsStation {
+            + PlaceComponentsStation(failureRate: double)
+            # performOperation(pcb, stats): boolean
+        }
+        
+        class ReflowSolderStation {
+            + ReflowSolderStation(failureRate: double)
+            # performOperation(pcb, stats): boolean
+        }
+        
+        class OpticalInspectionStation {
+            + OpticalInspectionStation(failureRate: double)
+            # performOperation(pcb, stats): boolean
+        }
+    }
+    
+    together {
+        class HandSolderingStation {
+            + HandSolderingStation(failureRate: double)
+            # performOperation(pcb, stats): boolean
+        }
+        
+        class CleaningStation {
+            + CleaningStation(failureRate: double)
+            # performOperation(pcb, stats): boolean
+        }
+        
+        class DepanelizationStation {
+            + DepanelizationStation(failureRate: double)
+            # performOperation(pcb, stats): boolean
+        }
+        
+        class TestStation {
+            + TestStation(failureRate: double)
+            # performOperation(pcb, stats): boolean
+        }
+    }
 }
 
-class OpticalInspectStation {
-    + OpticalInspectStation(failureRate: double, stats: StatisticsCollector)
-    # performOperation(pcb: PCB): boolean
-}
-
-class HandSolderingStation {
-    + HandSolderingStation(failureRate: double, stats: StatisticsCollector)
-    # performOperation(pcb: PCB): boolean
-}
-
-class CleaningStation {
-    + CleaningStation(failureRate: double, stats: StatisticsCollector)
-    # performOperation(pcb: PCB): boolean
-}
-
-class DepanelizationStation {
-    + DepanelizationStation(failureRate: double, stats: StatisticsCollector)
-    # performOperation(pcb: PCB): boolean
-}
-
-class TestStation {
-    + TestStation(failureRate: double, stats: StatisticsCollector)
-    # performOperation(pcb: PCB): boolean
-}
-
-' Factory Pattern
-class PCBFactory <<Pattern>> {
-    + createPCB(type: String): PCB
-}
-note right of PCBFactory : Factory Pattern\nEncapsulates PCB\ncreation logic
-
-' Assembly Line Controller
-class AssemblyLine {
-    - stations: List<Station>
-    - stats: StatisticsCollector
-    + AssemblyLine()
-    + processPCB(pcb: PCB): void
-    + runSimulation(pcbType: String, quantity: int): StatisticsCollector
-}
-
-' Observer Pattern
-class StatisticsCollector <<Pattern>> {
-    - pcbsSubmitted: int
-    - defectFailures: Map<String, Integer>
-    - stationFailures: Map<String, Integer>
-    - completedPCBs: int
-    + recordSubmission(): void
-    + recordDefectFailure(station: String): void
-    + recordStationFailure(station: String): void
-    + recordCompletion(): void
-    + generateReport(pcbType: String): String
-}
-note right of StatisticsCollector : Observer Pattern\nTracks events per\nPCB type simulation
-
-' Main Controller
-class SimulationController {
-    - assemblyLine: AssemblyLine
-    - factory: PCBFactory
-    + SimulationController()
-    + runSimulation(pcbType: String, quantity: int): void
-    + printResults(): void
-}
-
-' Inheritance relationships
+' Inheritance Relationships
 PCB <|-- TestBoard
 PCB <|-- SensorBoard
 PCB <|-- GatewayBoard
@@ -136,37 +207,84 @@ PCB <|-- GatewayBoard
 Station <|-- ApplySolderPasteStation
 Station <|-- PlaceComponentsStation
 Station <|-- ReflowSolderStation
-Station <|-- OpticalInspectStation
+Station <|-- OpticalInspectionStation
 Station <|-- HandSolderingStation
 Station <|-- CleaningStation
 Station <|-- DepanelizationStation
 Station <|-- TestStation
 
-' Associations
+' Composition Relationships
+TestBoard *-- DefectRates
+SensorBoard *-- DefectRates
+GatewayBoard *-- DefectRates
+
+' Spring Dependency Injection Flow (Top to Bottom)
+PcbApplication ||..|| SimulationController : creates via @Bean
+
+SimulationController ||--|| AssemblyLine : constructor injection
+SimulationController ||--|| PCBFactory : constructor injection
+
+PCBFactory ||--|| PCBProperties : constructor injection
+PCBSimulationConfig ||--|| StationFactory : constructor injection
+StationFactory ||--|| StationProperties : constructor injection
+
+AssemblyLine ||--|| Station : List<Station> injected
+
+' Factory Pattern Creation
+PCBFactory ..> PCB : <<creates>>
+StationFactory ..> Station : <<creates>>
+
+' Configuration Binding
+PCBProperties ||..|| DefectRates : @ConfigurationProperties
+
+' Processing Flow
+AssemblyLine ..> StatisticsCollector : coordinates
+Station ..> StatisticsCollector : updates
 Station ..> PCB : processes
 
-PCBFactory ..> PCB : <<creates>>
+' Compact Notes
+note top of StationFactory 
+Abstract Factory with Registry:
+Map<String, Function<Double, Station>>
+end note
 
-AssemblyLine o-- Station : contains
-AssemblyLine ..> PCB : processes
+note top of PCBFactory 
+Factory Pattern with
+Configuration Injection
+end note
 
+note top of PCBProperties 
+@ConfigurationProperties
+binds application.properties
+to DefectRates objects
+end note
 
-PlaceComponentsStation --> StatisticsCollector : notifies
-ReflowSolderStation --> StatisticsCollector : notifies
-OpticalInspectionStation --> StatisticsCollector : notifies
-HandSolderingStation --> StatisticsCollector : notifies
-CleaningStation --> StatisticsCollector : notifies
-DepanelizationStation --> StatisticsCollector : notifies
-TestStation --> StatisticsCollector : notifies
+note right of SimulationController 
+Constructor Injection
+@RequiredArgsConstructor
+eliminates @Autowired
+end note
 
+note bottom of DefectRates 
+Unified Model:
+Domain Logic + 
+Spring Property Binding
+end note
 
-SimulationController --> AssemblyLine : controls
-SimulationController --> PCBFactory : uses
+' Compact Legend
+note as N1
+<b>Spring Boot PCB Simulation</b>
 
-' Notes for design patterns
-note bottom of PlaceComponentsStation : Detects\nDefects
-note bottom of OpticalInspectionStation : Detects\nDefects
-note bottom of HandSolderingStation : Detects\nDefects
-note bottom of TestStation : Detects\nDefects
+<color:LightGreen>■</color> Spring Managed Beans
+<color:LightYellow>■</color> Design Patterns  
+<color:LightCyan>■</color> Configuration
+<color:LightBlue>■</color> Abstract Classes
+
+<b>Key Features:</b>
+• Constructor Injection (@RequiredArgsConstructor)
+• Configuration Properties (@ConfigurationProperties)
+• Abstract Factory Pattern (Registry-based)
+• Unified DefectRates Model
+end note
 
 @enduml
