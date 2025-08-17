@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.springframework.boot:spring-boot-starter-web")
 	
 	// Lombok for reducing boilerplate code
 	compileOnly("org.projectlombok:lombok")
@@ -50,9 +50,6 @@ spotless {
 		// Basic formatting
 		trimTrailingWhitespace()
 		endWithNewline()
-		
-		// License header - commented out for now
-		// licenseHeaderFile(rootProject.file("license-header.txt")).skipLinesMatching("^package ")
 	}
 }
 
@@ -67,8 +64,3 @@ tasks.register("preCommit") {
 	description = "Runs code quality checks before commit"
 	dependsOn("spotlessCheck", "test")
 }
-
-// Auto-format before compiling (optional - uncomment if desired)
-// tasks.named("compileJava") {
-//     dependsOn("spotlessApply")  
-// }
