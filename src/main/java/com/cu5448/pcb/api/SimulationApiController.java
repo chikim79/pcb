@@ -41,13 +41,13 @@ public class SimulationApiController {
     public ResponseEntity<String> runSimulation(
             @PathVariable String pcbType, @RequestParam(defaultValue = "1000") int quantity) {
 
-        // Run simulation asynchronously and store results in memory
-        simulationController.runSimulation(pcbType, quantity);
+        // Start simulation asynchronously using @Async method
+        simulationController.runSimulationAsync(pcbType, quantity);
 
         return ResponseEntity.status(201)
                 .body(
                         String.format(
-                                "Simulation started for PCB type: %s with quantity: %d",
+                                "Simulation started asynchronously for PCB type: %s with quantity: %d",
                                 pcbType, quantity));
     }
 
@@ -61,13 +61,13 @@ public class SimulationApiController {
     public ResponseEntity<String> runAllSimulations(
             @RequestParam(defaultValue = "1000") int quantity) {
 
-        // Run all simulations asynchronously and store results in memory
-        simulationController.runAllSimulations();
+        // Start all simulations asynchronously using @Async method
+        simulationController.runAllSimulationsAsync();
 
         return ResponseEntity.status(201)
                 .body(
                         String.format(
-                                "Simulations started for all PCB types with quantity: %d",
+                                "Simulations started asynchronously for all PCB types with quantity: %d",
                                 quantity));
     }
 

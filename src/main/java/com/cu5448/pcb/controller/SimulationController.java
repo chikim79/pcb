@@ -2,7 +2,9 @@ package com.cu5448.pcb.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.cu5448.pcb.service.AssemblyLine;
@@ -27,7 +29,21 @@ public class SimulationController {
     private final Map<String, StatisticsCollector> results = new HashMap<>();
 
     /**
-     * Run simulation for a specific PCB type and store results in memory.
+     * Run simulation for a specific PCB type asynchronously and store results in memory.
+     *
+     * @param pcbType the type of PCB to simulate
+     * @param quantity number of PCBs to process
+     * @return CompletableFuture with the statistics collector results
+     */
+    @Async
+    public CompletableFuture<StatisticsCollector> runSimulationAsync(String pcbType, int quantity) {
+        StatisticsCollector stats = assemblyLine.runSimulation(pcbType, quantity);
+        results.put(pcbType, stats);
+        return CompletableFuture.completedFuture(stats);
+    }
+
+    /**
+     * Run simulation for a specific PCB type synchronously (for internal use).
      *
      * @param pcbType the type of PCB to simulate
      * @param quantity number of PCBs to process
@@ -50,7 +66,20 @@ public class SimulationController {
     }
 
     /**
-     * Run simulations for all three PCB types and store results in memory.
+     * Run simulations for all three PCB types asynchronously and store results in memory.
+     *
+     * @return CompletableFuture that completes when all simulations are done
+     */
+    @Async
+    public CompletableFuture<Map<String, StatisticsCollector>> runAllSimulationsAsync() {
+        runSimulation("Test Board");
+        runSimulation("Sensor Board");
+        runSimulation("Gateway Board");
+        return CompletableFuture.completedFuture(new HashMap<>(results));
+    }
+
+    /**
+     * Run simulations for all three PCB types synchronously (for internal use).
      *
      * @return map of all simulation results by PCB type
      */
