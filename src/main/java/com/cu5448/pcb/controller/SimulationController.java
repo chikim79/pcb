@@ -100,18 +100,6 @@ public class SimulationController {
     }
 
     /**
-     * Run simulations for all three PCB types synchronously and persist results to database.
-     *
-     * @return list of all simulation results
-     */
-    public List<SimulationResult> runAllSimulations() {
-        SimulationResult testResult = runSimulation("test");
-        SimulationResult sensorResult = runSimulation("sensor");
-        SimulationResult gatewayResult = runSimulation("gateway");
-        return List.of(testResult, sensorResult, gatewayResult);
-    }
-
-    /**
      * Retrieve the most recent simulation result for a specific PCB type.
      *
      * @param pcbType the type of PCB to get results for
@@ -132,52 +120,8 @@ public class SimulationController {
         return simulationResultRepository.findLatestResultForEachPcbType();
     }
 
-    /**
-     * Retrieve all simulation results for a specific PCB type (historical data).
-     *
-     * @param pcbType the type of PCB to get all results for
-     * @return list of all simulation results for the given PCB type
-     */
-    public List<SimulationResult> getAllResultsForPcbType(String pcbType) {
-        return simulationResultRepository.findByPcbTypeOrderByCreatedAtDesc(pcbType);
-    }
-
-    /**
-     * Check if simulation results exist for a specific PCB type.
-     *
-     * @param pcbType the type of PCB to check
-     * @return true if results exist, false otherwise
-     */
-    public boolean hasSimulationResults(String pcbType) {
-        return simulationResultRepository.existsByPcbType(pcbType);
-    }
-
     /** Clear all stored simulation results from database. */
     public void clearAllResults() {
         simulationResultRepository.deleteAll();
-    }
-
-    /**
-     * Clear all simulation results for a specific PCB type.
-     *
-     * @param pcbType the type of PCB to clear results for
-     * @return number of deleted records
-     */
-    public long clearResultsForPcbType(String pcbType) {
-        return simulationResultRepository.deleteByPcbType(pcbType);
-    }
-
-    /**
-     * Print results to console (for debugging/testing purposes).
-     *
-     * @param pcbType the type of PCB to print results for
-     */
-    public void printResults(String pcbType) {
-        SimulationResult result = getSimulationResults(pcbType);
-        if (result != null) {
-            System.out.println(result.getFormattedReport());
-        } else {
-            System.out.printf("No results found for PCB type: %s\n", pcbType);
-        }
     }
 }
