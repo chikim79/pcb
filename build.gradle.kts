@@ -20,6 +20,11 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	
+	// SQLite database
+	runtimeOnly("org.xerial:sqlite-jdbc")
+	runtimeOnly("org.hibernate.orm:hibernate-community-dialects")
 	
 	// Lombok for reducing boilerplate code
 	compileOnly("org.projectlombok:lombok")
