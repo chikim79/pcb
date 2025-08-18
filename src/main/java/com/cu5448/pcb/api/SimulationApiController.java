@@ -2,7 +2,6 @@ package com.cu5448.pcb.api;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,17 +9,17 @@ import org.springframework.web.bind.annotation.*;
 import com.cu5448.pcb.controller.SimulationController;
 import com.cu5448.pcb.dto.SimulationReportDto;
 import com.cu5448.pcb.dto.SimulationReportMapper;
-import com.cu5448.pcb.service.StatisticsCollector;
+import com.cu5448.pcb.entity.SimulationResult;
 
 import lombok.RequiredArgsConstructor;
 
 /**
  * REST API Controller for PCB simulation operations. Implements the server-side requirement: run
- * simulations to gather failure results in memory, then wait for client API calls to retrieve the
- * stored simulation results as JSON.
+ * simulations to gather failure results and persist them to SQLite database, then wait for client
+ * API calls to retrieve the stored simulation results as JSON.
  *
- * <p>Provides separate endpoints for running simulations and retrieving stored results, ensuring
- * results are maintained in memory between API calls.
+ * <p>Provides separate endpoints for running simulations and retrieving persisted results from
+ * database.
  */
 @RestController
 @RequestMapping("/api/simulation")
@@ -80,33 +79,32 @@ public class SimulationApiController {
      */
     @GetMapping("/results/{pcbType}")
     public ResponseEntity<SimulationReportDto> getSimulationResults(@PathVariable String pcbType) {
-        StatisticsCollector stats = simulationController.getSimulationResults(pcbType);
+        SimulationResult result = simulationController.getSimulationResults(pcbType);
 
-        if (stats == null) {
+        if (result == null) {
             return ResponseEntity.notFound().build();
         }
 
-        SimulationReportDto report = reportMapper.toDto(stats, pcbType);
+        SimulationReportDto report = reportMapper.toDto(result);
         return ResponseEntity.ok(report);
     }
 
     /**
-     * Retrieve all stored simulation results.
+     * Retrieve all stored simulation results (latest for each PCB type).
      *
      * @return list of simulation reports for all stored results
      */
     @GetMapping("/results/all")
     public ResponseEntity<List<SimulationReportDto>> getAllSimulationResults() {
-        Map<String, StatisticsCollector> allResults =
-                simulationController.getAllSimulationResults();
+        List<SimulationResult> allResults = simulationController.getAllSimulationResults();
 
         if (allResults.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         List<SimulationReportDto> reports = new ArrayList<>();
-        for (Map.Entry<String, StatisticsCollector> entry : allResults.entrySet()) {
-            SimulationReportDto report = reportMapper.toDto(entry.getValue(), entry.getKey());
+        for (SimulationResult result : allResults) {
+            SimulationReportDto report = reportMapper.toDto(result);
             reports.add(report);
         }
 
