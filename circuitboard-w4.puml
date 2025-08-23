@@ -1,0 +1,150 @@
+@startuml PCB_Assembly_Simulation_DAO
+
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam direction top to bottom
+skinparam packageStyle rectangle
+skinparam class {
+    BackgroundColor<<RestController>> LightSalmon
+    BorderColor<<RestController>> DarkOrange
+    BackgroundColor<<BusinessController>> LightGoldenRodYellow
+    BorderColor<<BusinessController>> DarkGoldenRod
+    BackgroundColor<<Spring>> LightGreen
+    BorderColor<<Spring>> DarkGreen
+    BackgroundColor<<Pattern>> LightYellow
+    BorderColor<<Pattern>> DarkGoldenRod
+    BackgroundColor<<DAO>> Lavender
+    BorderColor<<DAO>> Purple
+    BackgroundColor<<Entity>> MistyRose
+    BorderColor<<Entity>> Crimson
+}
+
+class PcbApplication <<Spring>>
+
+class SimulationApiController <<RestController>> {
+    + runSimulation(pcbType, quantity)
+    + getSimulationResults(pcbType)
+    + getAllSimulationResults()
+}
+
+class SimulationController <<BusinessController>> {
+    + runSimulation(pcbType, quantity)
+    + getSimulationResults(pcbType)
+    + getAllSimulationResults()
+}
+
+interface SimulationResultRepository <<DAO>> {
+    <<interface>>
+    + findFirstByPcbTypeOrderByCreatedAtDesc()
+    + findLatestResultForEachPcbType()
+    + save(entity)
+    + deleteAll()
+}
+
+class SimulationResult <<Entity>> {
+    @Id - id: Long
+    - pcbType: String
+    - pcbsSubmitted: int
+    - pcbsCompleted: int
+    @Convert - stationFailures: Map
+    @Convert - defectFailures: Map
+    - formattedReport: String
+    - createdAt: LocalDateTime
+}
+
+class AssemblyLine <<Spring>> {
+    + runSimulation(pcbType, quantity)
+    + processPCB(pcb, stats)
+}
+
+class StatisticsCollector {
+    - pcbsSubmitted: int
+    - defectFailures: Map
+    - stationFailures: Map
+    - completedPCBs: int
+    + recordSubmission()
+    + recordCompletion()
+    + generateReport(pcbType)
+}
+
+class PCBFactory <<Pattern>> {
+    + createPCB(type): PCB
+}
+
+abstract class PCB {
+    - id: String
+    - type: String
+    - failed: boolean
+    + getType(): String
+    + setFailed(reason): void
+    + isFailed(): boolean
+}
+
+abstract class Station {
+    - name: String
+    - stationFailureRate: double
+    + process(pcb, stats): void
+    # performOperation(pcb, stats): boolean
+}
+
+class TestBoard
+class SensorBoard  
+class GatewayBoard
+
+class ApplySolderPasteStation
+class PlaceComponentsStation
+class OpticalInspectionStation
+class TestStation
+
+' Key Relationships
+PCB <|-- TestBoard
+PCB <|-- SensorBoard
+PCB <|-- GatewayBoard
+
+Station <|-- ApplySolderPasteStation
+Station <|-- PlaceComponentsStation
+Station <|-- OpticalInspectionStation
+Station <|-- TestStation
+
+' Main Flow
+SimulationApiController --> SimulationController
+SimulationController --> SimulationResultRepository : DAO Pattern
+SimulationController --> AssemblyLine
+SimulationResultRepository --> SimulationResult : manages
+AssemblyLine --> StatisticsCollector
+PCBFactory --> PCB : creates
+Station --> StatisticsCollector : updates
+
+' Notes
+note right of SimulationResultRepository
+**DAO Pattern**
+@Repository extending JpaRepository
+Data access abstraction over SQLite
+end note
+
+note top of SimulationResult
+**JPA Entity**
+@Entity with JSON conversion
+end note
+
+note bottom of PCBFactory
+**Factory Pattern**
+end note
+
+note as Legend
+<b>PCB Simulation with DAO Pattern</b>
+
+<color:Lavender>■</color> **DAO Pattern** (Repository)
+<color:MistyRose>■</color> **JPA Entities**
+<color:LightSalmon>■</color> REST Controllers
+<color:LightGoldenRodYellow>■</color> Business Controllers
+<color:LightYellow>■</color> Design Patterns
+<color:LightGreen>■</color> Spring Beans
+
+**Key Changes:**
+• HashMap → SQLite Database
+• Repository DAO Pattern
+• JPA Entity Persistence
+end note
+
+@enduml
